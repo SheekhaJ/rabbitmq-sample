@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, flash, redirect
 import pika
 
 app = Flask(__name__)
@@ -28,6 +28,26 @@ def add(cmd):
     connection.close()
     return " [x] Sent: %s" % cmd
 
+@app.route('/models/mnist',methods=['GET','POST'])
+def mnistModels():
+    if request.method == 'POST':
+        # return 'POST request received!'
+        if 'file' not in request.files:
+            flash('No file uploaded!')
+            return redirect(request.url)
+        else:
+            file = request.files['file']
+            return f'Received file {file}'
+    if request.method == 'GET':
+        return '''
+        <!doctype html>
+        <title>Upload MNIST image file</title>
+        <h1>Upload MNIST image file</h1>
+        <form method=post enctype=multipart/form-data>
+        <input type=file name=file>
+        <input type=submit value=Upload>
+        </form>
+        '''
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
