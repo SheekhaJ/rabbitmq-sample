@@ -1,10 +1,13 @@
-from flask import Flask
+from flask import Flask, url_for
 from flask import request
 
 app = Flask(__name__)
 
+# Demonstration of usage of url_for() method to dynamically build URLs.
 @app.route('/')
 def index():
+    print(f'URL for viewing generic username profile - {url_for("show_user_profile",username="Vanessa")}')
+    print(f'URL for viewing string username profile - {url_for("show_user_profile_str",username="Jane")}')
     return 'Index page!'
 
 @app.route('/hello')
