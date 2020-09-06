@@ -1,10 +1,14 @@
+import os
 from flask import Flask, request, flash, redirect, url_for
 import pika
 from werkzeug.utils import secure_filename
 
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+mnistUploadFolder = './../model-user-uploads/mnist/'
+
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = mnistUploadFolder
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -32,6 +36,7 @@ def index():
             # return f'1) filename - {file.filename}'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # return redirect(url_for('uploaded_file', filename=filename))
             # return f'2) filename - {file.filename}'
             return redirect(url_for('mnistModels',mnistfilename=filename),code=302)
@@ -64,7 +69,5 @@ def allowed_file(filename):
 def mnistModels(mnistfilename):
     return f'Invoked mnist model service type of request - {request.method} and filename is {mnistfilename}!'
     
-    
-
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
